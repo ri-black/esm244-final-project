@@ -1,4 +1,7 @@
 library(shiny)
+library(leaflet)
+library(sf)
+library(shinyWidgets)
 
 # Define UI define
 ui <- fluidPage(
@@ -33,9 +36,14 @@ ui <- fluidPage(
     
 ############ DROUGHT MAP - TB ############
     tabPanel("Drought Map", 
-             h3("Welcome to Tab 2"),
-             p("This is the content for the second tab.")
-    ),
+             h3("Drought Over Time"),
+             p("[Use the slider to visualize drought conditions by date.]"),
+             sliderInput("date", "Select Date:",
+                         min = as.Date("2000-01-01"), 
+                         max = as.Date("2025-01-01"), 
+                         value = as.Date("2010-06-01"),
+                         timeFormat = "%Y-%m-%d"),
+             leafletOutput("drought_map", height = "600px")),
 
 ############ CLIMATE FACTORS - SL ############
     tabPanel("Climate Trends", 
