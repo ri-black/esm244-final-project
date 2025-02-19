@@ -80,10 +80,11 @@ tabPanel("Principal Component Analysis",
              
              selectInput("county",
                          label = "Select County",
-                         choices = c("Los Angeles", "El Dorado")),
+                         choices = NULL),
              selectInput("climate_factor",
                          label = "Select Climate Variable",
-                         choices = c("Temperature", "Precipitation", "Runoff", "Soil Moisture", "Snow Water Equivalent")),
+                         choices = c("Precipittion", "Minimum Temperature", "Mean Temperature", 
+                                     "Maximum Temperature", "Min VPD", "Max VPD")),
              plotOutput("climate_plot")
     ),
 
@@ -106,9 +107,52 @@ tabPanel("Principal Component Analysis",
 )
 
 # Define server logic
-server <- function(input, output) {
+server <- function(input, output, session) {
   # Add any server-side logic here if necessary
+  
+  #SAM CLIMATE SECTION
+  
+  server <- function(input, output, session) {
+    
+    # Load the data
+    climate_data <- reactive({
+      climate_year <- read_csv(here("data", "monthly_prism_climate.csv")) |>
+        select(-latitude, -longitude, -elevation_m)
+      
+      return(climate_year)
+    })
+    
+    # Dynamically update the county choices based on the dataset
+    observe({
+      data <- climate_data()  # Get the dataset
+      counties <- unique(data$county)  # Extract unique counties from the first column
+      
+      # Update the 'county' selectInput choices
+      updateSelectInput(session, "county", choices = counties)
+    })
+    
+    # Filter data based on selected county
+    filtered_climate <- reactive({
+      data <- climate_data()
+      data[data$county == input$county, ]
+    })
+    
+    # Create the plot based on selected climate variable
+    output$climate_plot <- renderPlot({
+      data <- filtered_climate()  # Get the filtered dataset
+      
+      # Plot the selected climate variable (dynamically)
+      p <- ggplot(data[data$climate_factor == input$climate_factor, ], aes(x = date, y = value, color = climate_factor)) + 
+        geom_line(size = 1) + 
+        theme_minimal() +
+        labs(x = "Year", y = input$climate_factor, title = paste(input$climate_factor, "Trend in", input$county)) +
+        theme(axis.text.x = element_text(angle = 45, hjust = 1))
+      
+      print(p)
+    })
+  }
 }
-
-# Run the application
-shinyApp(ui = ui, server = server)
+  
+  # Run the application
+  shinyApp(ui = ui, server = server)
+  
