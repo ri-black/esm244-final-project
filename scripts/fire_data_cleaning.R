@@ -9,8 +9,6 @@ fire_data <- read_csv(here("data", "fire_data_raw.csv")) %>%
   rename(county = county_nam, acres_burn = gis_acres) %>%   
   drop_na(county) 
  
-
-
 fire_data_mod <- fire_data %>% 
   group_by(county) %>%
   summarise(
