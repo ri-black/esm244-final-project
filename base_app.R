@@ -45,6 +45,32 @@ ui <- fluidPage(
                          timeFormat = "%Y-%m-%d"),
              leafletOutput("drought_map", height = "600px")),
 
+############ PCA - RB ############
+tabPanel("Principal Component Analysis", 
+         h3("Principle Component Analysis for Environmental Variables Related to Drought"),
+         p("Principle Component Analysis (PCA) is an unsupervised machine learning ordination method, 
+               or linear dimensionality reduciton. PCA projects a swarm of mutlidimentional data
+               onto a two dimentional plot with Principle Components (PC) on each axis chosen based on 
+               the direction of the data with the greatest variance. PCA is useful for multidimentional data exploration
+               and can tell us a lot about correlations between many variables within a dataset."
+         ),
+         
+         sliderInput("date", "Select Date:",
+                     min = as.Date("2000-01-01"), 
+                     max = as.Date("2025-01-01"), 
+                     value = as.Date("2010-06-01"),
+                     timeFormat = "%Y-%m-%d"),
+         leafletOutput("drought_biplot"),
+         
+         #### not sure here if the checkbox will be best option here...
+         checkboxGroupInput("checkbox_menu", 
+                            label = "Select Symbology",
+                            choices = list("County" = "opt1", 
+                                           "Drought Index" = "opt2"), 
+                            selected = NULL),  # Default selection (None selected)
+         plotOutput("pca_biplot")
+),
+
 ############ CLIMATE FACTORS - SL ############
     tabPanel("Climate Trends", 
              h3("Understanding Climate Trends in Two California Counties"),
@@ -61,31 +87,6 @@ ui <- fluidPage(
              plotOutput("climate_plot")
     ),
 
-############ PCA - RB ############
-    tabPanel("Principal Component Analysis", 
-             h3("Principle Component Analysis for Environmental Variables Related to Drought"),
-             p("Principle Component Analysis (PCA) is an unsupervised machine learning ordination method, 
-               or linear dimensionality reduciton. PCA projects a swarm of mutlidimentional data
-               onto a two dimentional plot with Principle Components (PC) on each axis chosen based on 
-               the direction of the data with the greatest variance. PCA is useful for multidimentional data exploration
-               and can tell us a lot about correlations between many variables within a dataset."
-               ),
-            
-             sliderInput("date", "Select Date:",
-                         min = as.Date("2000-01-01"), 
-                         max = as.Date("2025-01-01"), 
-                         value = as.Date("2010-06-01"),
-                         timeFormat = "%Y-%m-%d"),
-             leafletOutput("drought_biplot"),
-
-                                                     #### not sure here if the checkbox will be best option here...
-             checkboxGroupInput("checkbox_menu", 
-                                  label = "Select Symbology",
-                                  choices = list("County" = "opt1", 
-                                                 "Drought Index" = "opt2"), 
-                                  selected = NULL),  # Default selection (None selected)
-             plotOutput("pca_biplot")
-    ),
 
 ############ EJ - RB + TB ############
     tabPanel("Environmental Justice", 
