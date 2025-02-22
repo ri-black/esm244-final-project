@@ -10,7 +10,7 @@ library(janitor)
 library(readr)
 
 # Define UI define
-ui <- fluidPage(
+UI <- fluidPage(
   # Application title
   titlePanel("Understanding Drought Risk for Two California Counties"),
   
@@ -84,7 +84,7 @@ tabPanel("Principal Component Analysis",
                Yearly precipitation (rain and snow), temperature, and soil moisture all contribute to drought risk. 
                To explore these trends for Los Angeles and El Dorado counties, select a county and a climate variable from the dropdown menus below."),
              
-             selectInput("county",
+             selectInput("county_cl",
                          label = "Select County",
                          choices = NULL),
              selectInput("climate_factor",
@@ -100,7 +100,7 @@ tabPanel("Principal Component Analysis",
              p("Water security, quality, wildfires, air quality, and other issues all can be caused or exastebated by drought.
                Marginalized groups and those with the least resources offten bear the brunt of impacts from drought."),
 
-             selectInput("county",
+             selectInput("county_ej",
                          label = "Select County",
                          choices = c("Los Angeles", "El Dorado")),
              selectInput("envjustice",
@@ -112,7 +112,7 @@ tabPanel("Principal Component Analysis",
 )
 
 # Define server logic
-server <- function(input, output, session) {
+SERVER <- function(input, output, session) {
   
   # Load the data reactively
   climate_data <- reactive({
@@ -123,7 +123,7 @@ server <- function(input, output, session) {
   observe({
     data <- climate_data()
     counties <- unique(data$county)
-    updateSelectInput(session, "county", choices = counties)
+    updateSelectInput(session, "county_cl", choices = counties)
   })
   
   # Dynamically update the climate factor choices from the 'climate factor' column
@@ -135,9 +135,9 @@ server <- function(input, output, session) {
   
   # Filter data based on selected county and climate factor
   filtered_data <- reactive({
-    req(input$county, input$climate_factor)  # wait for both inputs
+    req(input$county_cl, input$climate_factor)  # wait for both inputs
     data <- climate_data() %>%
-      filter(county == input$county, `climate_factor` == input$climate_factor)
+      filter(county == input$county_cl, `climate_factor` == input$climate_factor)
     data
   })
   
@@ -151,10 +151,10 @@ server <- function(input, output, session) {
       theme_minimal() +
       labs(x = "Year", 
            y = "Value", 
-           title = paste(input$climate_factor, "Trend in", input$county)) +
+           title = paste(input$climate_factor, "Trend in", input$county_cl)) +
       theme(axis.text.x = element_text(angle = 45, hjust = 1))
   })
 }
 
-shinyApp(ui = ui, server = server)
+shinyApp(ui = UI, server = SERVER)
   
